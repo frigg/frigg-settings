@@ -1,0 +1,2 @@
+pyyaml==3.11
+frigg-test-discovery>0.0,<1.1
