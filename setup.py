@@ -26,6 +26,10 @@ setup(
     url='https://github.com/frigg/frigg-settings',
     py_modules=['frigg_test_discovery'],
     include_package_data=True,
+    install_requires=[
+        'pyyaml==3.11',
+        'frigg-test-discovery>0.0,<1.1',
+    ],
     classifiers=[
         'Programming Language :: Python :: 3',
     ]
