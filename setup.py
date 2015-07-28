@@ -1,7 +1,7 @@
 # -*- encoding: utf8 -*-
-from setuptools import find_packages, setup
+import re
 
-import frigg_settings
+from setuptools import find_packages, setup
 
 
 def _read_long_description():
@@ -11,7 +11,14 @@ def _read_long_description():
     except Exception:
         return None
 
-version = frigg_settings.__version__
+
+version = ''
+with open('frigg_settings/__init__.py', 'r') as fd:
+    version = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+        fd.read(),
+        re.MULTILINE
+    ).group(1)
 
 
 setup(
