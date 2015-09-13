@@ -24,9 +24,20 @@ class SettingsTests(unittest.TestCase):
         load_settings_file('.frigg.yml', self.runner)
         mock_read_file.assert_called_once_with('.frigg.yml')
 
+    @mock.patch('frigg_settings.settings.detect_tox_environments', lambda *a: ['tests', 'flake8'])
     @mock.patch('frigg_settings.settings.load_settings_file', return_value=SETTINGS_DICT)
     def test_build_settings(self, mock_load_settings_file):
         build_settings(os.path.dirname(os.path.dirname(__file__)), self.runner)
         mock_load_settings_file.assert_called_once()
-        self.assertTrue(mock_load_settings_file.call_args_list[0]
-                                               .endswith('frigg/frigg-settings/.frigg.yml'))
+        self.assertTrue(
+            mock_load_settings_file.call_args_list[0].endswith('frigg/frigg-settings/.frigg.yml')
+        )
+
+    @mock.patch('frigg_settings.settings.detect_tox_environments', lambda *a: ['tests', 'flake8'])
+    @mock.patch('frigg_settings.settings.load_settings_file', return_value=SETTINGS_DICT)
+    def test_build_settings_should_load_tox_tasks(self, mock_load_settings_file):
+        settings = build_settings(os.path.dirname(os.path.dirname(__file__)), self.runner)
+
+        self.assertIn('tox -e tests', settings['tasks'])
+        self.assertIn('tox -e flake8', settings['tasks'])
+        self.assertNotIn('tox', settings['tasks'])

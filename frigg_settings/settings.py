@@ -1,7 +1,7 @@
 from os.path import join
 
 import yaml
-from frigg_test_discovery import detect_test_tasks
+from frigg_test_discovery import detect_test_tasks, detect_tox_environments
 
 
 def build_tasks(directory, runner):
@@ -31,6 +31,13 @@ def build_settings(directory, runner):
         settings.update(load_settings_file(path, runner))
     else:
         settings['tasks'] = build_tasks(directory, runner)
+
+    if 'tox' in settings['tasks']:
+        settings['tasks'].remove('tox')
+        for task in detect_tox_environments(runner, directory):
+            settings['tasks'].append('tox -e ' + task)
+
+    print(settings)
 
     if len(settings['tasks']) == 0:
         raise RuntimeError('No tasks found')
