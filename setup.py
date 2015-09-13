@@ -35,7 +35,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'pyyaml==3.11',
-        'frigg-test-discovery>0.0,<1.1',
+        'frigg-test-discovery>1.0,<2.0',
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
