@@ -23,6 +23,8 @@ def build_settings(directory, runner):
     path = get_path_of_settings_file(directory, runner)
 
     settings = {
+        'setup_tasks': [],
+        'tasks': [],
         'webhooks': [],
         'services': []
     }
@@ -36,8 +38,6 @@ def build_settings(directory, runner):
         settings['tasks'].remove('tox')
         for task in detect_tox_environments(runner, directory):
             settings['tasks'].append('tox -e ' + task)
-
-    print(settings)
 
     if len(settings['tasks']) == 0:
         raise RuntimeError('No tasks found')
