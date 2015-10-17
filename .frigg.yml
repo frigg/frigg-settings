@@ -1,5 +1,5 @@
 tasks:
- - tox -e py34
+ - tox -e tests
  - tox -e flake8
  - tox -e isort
  - tox -e coverage

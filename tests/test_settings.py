@@ -28,7 +28,6 @@ class SettingsTests(unittest.TestCase):
     @mock.patch('frigg_settings.settings.load_settings_file', return_value=SETTINGS_DICT)
     def test_build_settings(self, mock_load_settings_file):
         build_settings(os.path.dirname(os.path.dirname(__file__)), self.runner)
-        mock_load_settings_file.assert_called_once()
         self.assertTrue(
             mock_load_settings_file.call_args_list[0].endswith('frigg/frigg-settings/.frigg.yml')
         )
