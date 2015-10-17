@@ -1,8 +1,8 @@
 tasks:
- - tox -e py34
+ - tox -e tests
  - tox -e flake8
  - tox -e isort
- - coverage report -m && coverage xml
+ - tox -e coverage
 
 coverage:
   path: coverage.xml
