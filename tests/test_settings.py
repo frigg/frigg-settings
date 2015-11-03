@@ -1,42 +1,55 @@
 import os
-import unittest
-from unittest import mock
+import pytest
 
 from frigg_settings import build_settings, build_tasks, load_settings_file
 from frigg_settings.helpers import FileSystemWrapper
 
-SETTINGS_FILE = ('tasks:\n - tox -e py34\n - tox -e flake8\n - tox -e isort\n - coverage report -m '
-                 '&& coverage xml\n\ncoverage:\n  path: coverage.xml\n  parser: python\n')
-SETTINGS_DICT = {'tasks': ['tox'], 'coverage': None}
+
+@pytest.fixture
+def settings_file():
+    return ('tasks:\n - tox -e py34\n - tox -e flake8\n - tox -e isort\n - coverage report -m '
+            '&& coverage xml\n\ncoverage:\n  path: coverage.xml\n  parser: python\n')
 
 
-class SettingsTests(unittest.TestCase):
-    def setUp(self):
-        self.runner = FileSystemWrapper()
+@pytest.fixture
+def settings_dict():
+    return {'tasks': ['tox'], 'coverage': None}
 
-    @mock.patch('frigg_settings.helpers.FileSystemWrapper.list_files')
-    def test_build_tasks(self, mock_list_dir):
-        build_tasks('path', self.runner)
-        mock_list_dir.assert_called_once_with('path')
 
-    @mock.patch('frigg_settings.helpers.FileSystemWrapper.read_file', side_effect=SETTINGS_FILE)
-    def test_load_settings_file(self, mock_read_file):
-        load_settings_file('.frigg.yml', self.runner)
-        mock_read_file.assert_called_once_with('.frigg.yml')
+@pytest.fixture
+def runner():
+    return FileSystemWrapper()
 
-    @mock.patch('frigg_settings.settings.detect_tox_environments', lambda *a: ['tests', 'flake8'])
-    @mock.patch('frigg_settings.settings.load_settings_file', return_value=SETTINGS_DICT)
-    def test_build_settings(self, mock_load_settings_file):
-        build_settings(os.path.dirname(os.path.dirname(__file__)), self.runner)
-        self.assertTrue(
-            mock_load_settings_file.call_args_list[0].endswith('frigg/frigg-settings/.frigg.yml')
-        )
 
-    @mock.patch('frigg_settings.settings.detect_tox_environments', lambda *a: ['tests', 'flake8'])
-    @mock.patch('frigg_settings.settings.load_settings_file', return_value=SETTINGS_DICT)
-    def test_build_settings_should_load_tox_tasks(self, mock_load_settings_file):
-        settings = build_settings(os.path.dirname(os.path.dirname(__file__)), self.runner)
+def test_build_tasks(mocker, runner):
+    mock_list_dir = mocker.patch('frigg_settings.helpers.FileSystemWrapper.list_files')
+    build_tasks('path', runner)
+    mock_list_dir.assert_called_once_with('path')
 
-        self.assertIn('tox -e tests', settings['tasks'])
-        self.assertIn('tox -e flake8', settings['tasks'])
-        self.assertNotIn('tox', settings['tasks'])
+
+def test_load_settings_file(mocker, runner, settings_file):
+    mock_read_file = mocker.patch('frigg_settings.helpers.FileSystemWrapper.read_file',
+                                  side_effect=settings_file)
+    load_settings_file('.frigg.yml', runner)
+    mock_read_file.assert_called_once_with('.frigg.yml')
+
+
+def test_build_settings(mocker, runner, settings_dict):
+    mocker.patch('frigg_settings.settings.detect_tox_environments',
+                 return_value=['tests', 'flake8'])
+    mock_load_settings_file = mocker.patch('frigg_settings.settings.load_settings_file',
+                                           return_value=settings_dict)
+    build_settings(os.path.dirname(os.path.dirname(__file__)), runner)
+
+    assert mock_load_settings_file.call_args_list[0].endswith('frigg/frigg-settings/.frigg.yml')
+
+
+def test_build_settings_should_load_tox_tasks(mocker, runner, settings_dict):
+    mocker.patch('frigg_settings.settings.detect_tox_environments',
+                 return_value=['tests', 'flake8'])
+    mocker.patch('frigg_settings.settings.load_settings_file', return_value=settings_dict)
+    settings = build_settings(os.path.dirname(os.path.dirname(__file__)), runner)
+
+    assert 'tox -e tests' in settings['tasks']
+    assert 'tox -e flake8' in settings['tasks']
+    assert 'tox' not in settings['tasks']
