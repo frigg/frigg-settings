@@ -1,0 +1,25 @@
+setup_tasks:
+ - apt-get install -y somelib
+
+tasks:
+ - tox -e tests
+ - tox -e flake8
+ - tox -e coverage
+
+verbose_tasks:
+ - tox -e coverage
+
+services:
+ - postgresql
+
+coverage:
+ path: c.xml
+ parser: cobertura
+
+preview:
+  image: frigg/frigg-test-base
+  tasks:
+    - pip3 install gunicorn -r requirements/base.txt
+    - make frigg/settings/local.py
+    - createdb frigg
+    - gunicorn -D -b 0.0.0.0:8000 frigg.wsgi
