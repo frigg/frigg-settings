@@ -8,8 +8,29 @@ def build_tasks(directory, runner):
     return detect_test_tasks(runner.list_files(directory))
 
 
+def convert_v1_to_v2(content):
+    tasks = {'setup': [], 'tests': [], 'verbose': []}
+
+    if 'setup_tasks' in content:
+        tasks['setup'] = content['setup_tasks']
+
+    if 'tasks' in content:
+        tasks['tests'] = content['tasks']
+
+    if 'verbose_tasks' in content:
+        tasks['verbose'] = content['verbose_tasks']
+
+    content.update({'tasks': tasks})
+    return content
+
+
 def load_settings_file(path, runner):
-    return yaml.load(runner.read_file(path))
+    content = yaml.load(runner.read_file(path))
+
+    if isinstance(content['tasks'], list):
+        content = convert_v1_to_v2(content)
+
+    return content
 
 
 def get_path_of_settings_file(directory, runner):
@@ -23,8 +44,13 @@ def build_settings(directory, runner):
     path = get_path_of_settings_file(directory, runner)
 
     settings = {
-        'setup_tasks': [],
-        'tasks': [],
+        'tasks': {
+            'setup': [],
+            'tests': [],
+            'verbose': [],
+            'after_success': [],
+            'after_failure': [],
+        },
         'webhooks': [],
         'services': []
     }
@@ -32,14 +58,14 @@ def build_settings(directory, runner):
     if path is not None:
         settings.update(load_settings_file(path, runner))
     else:
-        settings['tasks'] = build_tasks(directory, runner)
+        settings['tasks']['tests'] = build_tasks(directory, runner)
 
-    if 'tox' in settings['tasks']:
-        settings['tasks'].remove('tox')
+    if 'tox' in settings['tasks']['tests']:
+        settings['tasks']['tests'].remove('tox')
         for task in detect_tox_environments(runner, directory):
-            settings['tasks'].append('tox -e ' + task)
+            settings['tasks']['tests'].append('tox -e ' + task)
 
-    if len(settings['tasks']) == 0:
+    if len(settings['tasks']['tests']) == 0:
         raise RuntimeError('No tasks found')
 
     return settings

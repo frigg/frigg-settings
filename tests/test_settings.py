@@ -13,7 +13,7 @@ def settings_file():
 
 @pytest.fixture
 def settings_dict():
-    return {'tasks': ['tox'], 'coverage': None}
+    return {'tasks': {'tests': ['tox']}, 'coverage': None}
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def test_build_tasks(mocker, runner):
 
 def test_load_settings_file(mocker, runner, settings_file):
     mock_read_file = mocker.patch('frigg_settings.helpers.FileSystemWrapper.read_file',
-                                  side_effect=settings_file)
+                                  return_value=settings_file)
     load_settings_file('.frigg.yml', runner)
     mock_read_file.assert_called_once_with('.frigg.yml')
 
@@ -50,6 +50,6 @@ def test_build_settings_should_load_tox_tasks(mocker, runner, settings_dict):
     mocker.patch('frigg_settings.settings.load_settings_file', return_value=settings_dict)
     settings = build_settings(os.path.dirname(os.path.dirname(__file__)), runner)
 
-    assert 'tox -e tests' in settings['tasks']
-    assert 'tox -e flake8' in settings['tasks']
-    assert 'tox' not in settings['tasks']
+    assert 'tox -e tests' in settings['tasks']['tests']
+    assert 'tox -e flake8' in settings['tasks']['tests']
+    assert 'tox' not in settings['tasks']['tests']
