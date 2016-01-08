@@ -9,12 +9,23 @@ class FriggSettings(object):
     }
     webhooks = []
     services = []
+    preview = {}
+    coverage = None
 
-    def __init__(self, obj):
+    def __init__(self, obj=None):
+        if obj is None:
+            return
+
         if isinstance(obj['tasks'], list):
             obj = self.convert_v1_to_v2(obj)
 
+        self.update(obj)
+
+    def update(self, obj):
+        tasks = self.tasks
         self.__dict__.update(obj)
+        tasks.update(obj['tasks'])
+        self.tasks = tasks
 
     def validate(self):
         return True
