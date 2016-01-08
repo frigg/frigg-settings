@@ -38,3 +38,8 @@ class FriggSettings(object):
     @property
     def has_tests_tasks(self):
         return len(self.tasks['tests']) > 0
+
+    def has_after_tasks(self, status):
+        if status:
+            return len(self.tasks['after_success']) > 0
+        return len(self.tasks['after_failure']) > 0
