@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 from frigg_settings import build_settings, build_tasks, load_settings_file
@@ -50,6 +51,6 @@ def test_build_settings_should_load_tox_tasks(mocker, runner, settings_dict):
     mocker.patch('frigg_settings.settings.load_settings_file', return_value=settings_dict)
     settings = build_settings(os.path.dirname(os.path.dirname(__file__)), runner)
 
-    assert 'tox -e tests' in settings['tasks']['tests']
-    assert 'tox -e flake8' in settings['tasks']['tests']
-    assert 'tox' not in settings['tasks']['tests']
+    assert 'tox -e tests' in settings.tasks['tests']
+    assert 'tox -e flake8' in settings.tasks['tests']
+    assert 'tox' not in settings.tasks['tests']
