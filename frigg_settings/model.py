@@ -1,18 +1,19 @@
 
 class FriggSettings(object):
-    tasks = {
-        'setup': [],
-        'tests': [],
-        'verbose': [],
-        'after_success': [],
-        'after_failure': [],
-    }
-    webhooks = []
-    services = []
-    preview = {}
-    coverage = None
 
     def __init__(self, obj=None):
+        self.tasks = {
+            'setup': [],
+            'tests': [],
+            'verbose': [],
+            'after_success': [],
+            'after_failure': [],
+        }
+        self.webhooks = []
+        self.services = []
+        self.preview = {}
+        self.coverage = None
+
         if obj is None:
             return
 

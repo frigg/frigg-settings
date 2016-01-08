@@ -37,3 +37,8 @@ def test_has_after_tasks_should_return_correct_value_for_successful_builds():
 def test_has_after_tasks_should_return_correct_value_for_unsuccessful_builds():
     assert FriggSettings({'tasks': {'after_failure': ['tox']}}).has_after_tasks(False)
     assert not FriggSettings({'tasks': {'after_failure': []}}).has_after_tasks(False)
+
+
+def test_model_should_create_new_objects():
+    FriggSettings({'tasks': {'tests': ['tox']}})
+    assert FriggSettings({'tasks': {'setup': ['tox']}}).tasks['tests'] != ['tox']
