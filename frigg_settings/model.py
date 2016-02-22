@@ -17,7 +17,7 @@ class FriggSettings(object):
         if obj is None:
             return
 
-        if isinstance(obj['tasks'], list):
+        if 'tasks' in obj and isinstance(obj['tasks'], list):
             obj = self.convert_v1_to_v2(obj)
 
         self.update(obj)
@@ -25,7 +25,9 @@ class FriggSettings(object):
     def update(self, obj):
         tasks = self.tasks
         self.__dict__.update(obj)
-        tasks.update(obj['tasks'])
+        if 'tasks' in obj:
+            tasks.update(obj['tasks'])
+
         self.tasks = tasks
 
     def validate(self):

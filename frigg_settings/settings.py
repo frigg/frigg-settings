@@ -12,7 +12,7 @@ def build_tasks(directory, runner):
 
 def load_settings_file(path, runner):
     if path is None:
-        return {}
+        return None
 
     content = yaml.load(runner.read_file(path))
 

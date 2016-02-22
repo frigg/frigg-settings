@@ -22,8 +22,7 @@ def test_filesystemwrapper_list_files():
 def test_filesystemwrapper_read_file():
     wrapper = FileSystemWrapper()
     assert(
-        wrapper.read_file(path('MANIFEST.in'))
-        ==
+        wrapper.read_file(path('MANIFEST.in')) ==
         'include setup.py README.md MANIFEST.in LICENSE\n'
     )
 

@@ -35,6 +35,10 @@ def test_load_settings_file(mocker, runner, settings_file):
     mock_read_file.assert_called_once_with('.frigg.yml')
 
 
+def test_load_settings_file_no_path(runner):
+    assert load_settings_file(None, runner) is None
+
+
 def test_build_settings(mocker, runner, settings_dict):
     mocker.patch('frigg_settings.settings.detect_tox_environments',
                  return_value=['tests', 'flake8'])

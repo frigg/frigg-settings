@@ -42,3 +42,7 @@ def test_has_after_tasks_should_return_correct_value_for_unsuccessful_builds():
 def test_model_should_create_new_objects():
     FriggSettings({'tasks': {'tests': ['tox']}})
     assert FriggSettings({'tasks': {'setup': ['tox']}}).tasks['tests'] != ['tox']
+
+
+def test_model_without_tasks():
+    assert 'setup' in FriggSettings({}).tasks
